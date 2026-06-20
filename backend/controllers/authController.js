@@ -1,123 +1,263 @@
-const User = require('../models/User');
-const UserProfile = require('../models/UserProfile');
-const ProviderProfile = require('../models/ProviderProfile');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const User = require("../models/User");
+const Provider = require("../models/Provider");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-// Helper to generate JWT structure
 const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  return jwt.sign(
+    {
+      id,
+      role,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "30d",
+    }
+  );
 };
 
-// 🧘 POST: Register a Standard User
+// USER REGISTER
+
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } =
+      req.body;
 
-    const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ message: 'User already exists' });
+    const userExists =
+      await User.findOne({ email });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    if (userExists) {
+      return res.status(400).json({
+        message:
+          "User already exists",
+      });
+    }
 
-    // 1. Create Base Auth Credentials
-    const newUser = await User.create({
+    const hashedPassword =
+      await bcrypt.hash(password, 10);
+
+    const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      role: 'user'
     });
-
-    // 2. Create Linked Blank User Profile Data Document
-    await UserProfile.create({ user: newUser._id, moodHistory: [], journalEntries: [] });
 
     res.status(201).json({
-      token: generateToken(newUser._id, newUser.role),
-      user: { id: newUser._id, name: newUser.name, email: newUser.email, role: newUser.role }
+      success: true,
+      token: generateToken(
+        user._id,
+        user.role
+      ),
+      user,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Registration failure', error: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// 🩺 POST: Register a Healthcare Provider
-exports.registerProvider = async (req, res) => {
+// USER LOGIN
+
+exports.loginUser = async (req, res) => {
   try {
-    const { name, email, password, specialization, qualification, licenseNumber, experienceYears, bio, phone} = req.body;
+    const { email, password } =
+      req.body;
 
-    const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ message: 'Email already registered' });
+    let user =
+      await User.findOne({ email });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+      if (!user) {
+        user = await Provider.findOne({ email });
+      }
 
-    const documentUrl = req.file ? req.file.path : null;
-    
-    // 1. Create Base Auth Credentials
-    const newUser = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      role: 'provider'
+      if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const isMatch =
+      await bcrypt.compare(
+        password,
+        user.password
+      );
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message:
+          "Invalid credentials",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      token: generateToken(
+        user._id,
+        user.role
+      ),
+      user,
     });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
-    // 2. Attempt Profile Creation
+// PROVIDER REGISTER
+
+exports.registerProvider =
+  async (req, res) => {
     try {
-      const newProfile = await ProviderProfile.create({
-        user: newUser._id,
+      const {
+        name,
+        email,
+        password,
         phone,
         specialization,
         qualification,
         licenseNumber,
         experienceYears,
+        services,
         bio,
-        documentUrl,
-        // hourlyRate,
-        // availability: []
-        services
-      });
+      } = req.body;
+
+      const exists =
+        await Provider.findOne({
+          email,
+        });
+
+      if (exists) {
+        return res.status(400).json({
+          message:
+            "Provider already exists",
+        });
+      }
+
+      const hashedPassword =
+        await bcrypt.hash(
+          password,
+          10
+        );
+
+      const provider =
+        await Provider.create({
+          name,
+          email,
+          password:
+            hashedPassword,
+
+          phone,
+          specialization,
+          qualification,
+          licenseNumber,
+          experienceYears,
+
+          services:
+            services?.split(",") ||
+            [],
+
+          bio,
+          verificationDoc:
+            req.file
+              ? req.file.filename
+              : "",
+        });
 
       res.status(201).json({
-        token: generateToken(newUser._id, newUser.role),
-        user: { id: newUser._id, name: newUser.name, email: newUser.email, role: newUser.role },
-        profile: newProfile
+        success: true,
+        token: generateToken(
+          provider._id,
+          provider.role
+        ),
+        user: provider,
       });
-    } catch (profileError) {
-      // Clean up orphaned account if profiling errors occur
-      await User.findByIdAndDelete(newUser._id);
-      return res.status(400).json({ message: 'Profile field validation failed.', error: profileError.message });
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Server error processing setup', error: error.message });
-  }
-};
+  };
 
-// 🔑 POST: Unified App Login
-exports.login = async (req, res) => {
+// PROVIDER LOGIN
+
+exports.loginProvider =
+  async (req, res) => {
+    try {
+      const { email, password } =
+        req.body;
+
+      const provider =
+        await Provider.findOne({
+          email,
+        });
+
+      if (!provider) {
+        return res.status(404).json({
+          message:
+            "Provider not found",
+        });
+      }
+
+      const isMatch =
+        await bcrypt.compare(
+          password,
+          provider.password
+        );
+
+      if (!isMatch) {
+        return res.status(400).json({
+          message:
+            "Invalid credentials",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        token: generateToken(
+          provider._id,
+          provider.role
+        ),
+        provider,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
+  };
+
+// CURRENT USER
+
+exports.getMe = async (
+  req,
+  res
+) => {
   try {
-    const { email, password } = req.body;
+    let data;
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+    if (req.user.role === "user") {
+      data =
+        await User.findById(
+          req.user.id
+        ).select("-password");
+    }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (
+      req.user.role ===
+      "provider"
+    ) {
+      data =
+        await Provider.findById(
+          req.user.id
+        ).select("-password");
+    }
 
-    res.status(200).json({
-      token: generateToken(user._id, user.role),
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
     });
-  } catch (error) {
-    res.status(500).json({ message: 'Server login issue', error: error.message });
-  }
-};
-
-// 🔄 GET: Sync User Context on Browser Reload
-exports.getMe = async (req, res) => {
-  try {
-    // req.user was previously fetched and verified inside the 'protect' middleware
-    res.status(200).json(req.user);
-  } catch (error) {
-    res.status(500).json({ message: 'Verification lookup fault', error: error.message });
   }
 };

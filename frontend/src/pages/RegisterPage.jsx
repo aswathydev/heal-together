@@ -1,8 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+// import { useDispatch } from "react-redux";
+// import { registerUser } from "../redux/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+// 1. Import your async thunks from the thunk file
+import { registerUser } from "../redux/authThunk"; 
+import { clearError } from "../redux/slices/authSlice";
 
 export default function RegisterPage() {
   const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
 
   const [form, setForm] = useState({
     name: '',
@@ -11,8 +19,44 @@ export default function RegisterPage() {
     confirmPassword: '',
   })
 
-  const [error, setError] = useState('')
+  const [validationError, setValidaitonError] = useState('')
   const [success, setSuccess] = useState('')
+
+
+  // Clear errors when the component unmounts
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
+
+
+  // Redirect or show success message if authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      // e.g., navigate("/dashboard") using react-router-dom if you have it
+      console.log("User is authenticated! Redirecting...");
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated]);
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setValidaitonError('')
+    setSuccess('')
+
+    const validationError = validate()
+      if (validationError) {
+        setValidaitonError(validationError)
+        return
+      }
+
+      const response = dispatch(registerUser(form)).unwrap();
+      navigate("/dashboard");
+  };
+
+
 
   function updateField(key, value) {
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -26,31 +70,42 @@ export default function RegisterPage() {
     return ''
   }
 
-  function handleSubmit(e) {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
+  // async function handleSubmit(e) {
+  //   e.preventDefault()
+  //   setError('')
+  //   setSuccess('')
 
-    const validationError = validate()
-    if (validationError) {
-      setError(validationError)
-      return
-    }
+  //   const validationError = validate()
+  //   if (validationError) {
+  //     setError(validationError)
+  //     return
+  //   }
 
-    // 🔥 Replace this with real API later
-    const newUser = {
-      email: form.email,
-      role: 'member',
-    }
+  //   // await dispatch(registerUser(form));
 
-    localStorage.setItem('mw_auth', JSON.stringify(newUser))
+  //   const userData = {
+  //     name: form.name,
+  //     email: form.email,
+  //     password: form.password,
+  //   };
+    
+  //   await dispatch(registerUser(userData));
 
-    setSuccess('Account created successfully!')
 
-    setTimeout(() => {
-      navigate('/login', { replace: true })
-    }, 1000)
-  }
+  //   // 🔥 Replace this with real API later
+  //   // const newUser = {
+  //   //   email: form.email,
+  //   //   role: 'member',
+  //   // }
+
+  //   // localStorage.setItem('mw_auth', JSON.stringify(newUser))
+
+  //   // setSuccess('Account created successfully!')
+
+  //   setTimeout(() => {
+  //     navigate('/dashboard', { replace: true })
+  //   }, 1000)
+  // }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-teal-50 px-4">
@@ -70,9 +125,9 @@ export default function RegisterPage() {
         {/* Form */}
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           
-          {error && (
+          {validationError && (
             <p className="bg-red-100 text-red-600 px-3 py-2 rounded-xl text-sm">
-              {error}
+              {validationError}
             </p>
           )}
   

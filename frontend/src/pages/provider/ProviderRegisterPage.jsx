@@ -1,10 +1,161 @@
 
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { registerProviderAccount } from '../../lib/providerStore'
+// import { useState, useEffect } from 'react'
+// import { Link, useNavigate } from 'react-router-dom'
+// import { useDispatch, useSelector } from "react-redux";
+// // 1. Import your async thunks from the thunk file
+// import { registerProvider } from "../../redux/authThunk";
+// import { clearError } from "../../redux/slices/authSlice";
+
+
+
+// export default function ProviderRegisterPage() {
+//   const navigate = useNavigate()
+//   const dispatch = useDispatch();
+//   const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
+
+//   const [form, setForm] = useState({
+//     name: '',
+//     email: '',
+//     phone: '',
+//     password: '',
+//     confirmPassword: '',
+//     specialization: '',
+//     qualification: '',
+//     licenseNumber: '',
+//     experienceYears: '',
+//     services: '',
+//     bio: '',
+//   })
+//   const [verificationDoc, setVerificationDoc] = useState(null);
+
+//   const [certificates, setCertificates] = useState([])
+//   const [validationError, setValidaitonError] = useState('')
+//   const [success, setSuccess] = useState('')
+
+//   useEffect(() => {
+//     return () => {
+//       dispatch(clearError());
+//     };
+//   }, [dispatch]);
+
+
+
+//   useEffect(() => {
+//     if (isAuthenticated) {
+//       // e.g., navigate("/dashboard") using react-router-dom if you have it
+//       console.log("User is authenticated! Redirecting...");
+//       navigate("/dashboard");
+//     }
+//   }, [isAuthenticated]);
+
+
+
+//   function updateField(key, value) {
+//     setForm((prev) => ({ ...prev, [key]: value }))
+//   }
+
+//   function onCertificateChange(event) {
+//     // const files = Array.from(event.target.files ?? [])
+//     // setCertificates(files.map((f) => f.name))
+//     const file = e.target.files?.[0];
+
+//     if (file) {
+//       setVerificationDoc(file);
+//     }
+//   }
+
+  // async function onSubmit(event) {
+  //   event.preventDefault()
+  //   setValidaitonError('')
+  //   setSuccess('')
+
+
+  //   if (form.password.length < 6) {
+  //     setError('Password should be at least 6 characters.')
+  //     return
+  //   }
+
+  //   if (form.password !== form.confirmPassword) {
+  //     setError('Passwords do not match.')
+  //     return
+  //   }
+
+  //   const formData = new FormData();
+
+  //   Object.entries(form).forEach(([key, value]) => {
+  //     formData.append(key, value);
+  //   });
+  //   console.log(formData);
+
+
+  //   if (verificationDoc) {
+  //     formData.append('verificationDoc', verificationDoc);
+  //   }
+
+
+  //   function validate() {
+  //     // 1. Basic Fields
+  //     if (!form.name.trim()) return 'Name is required';
+
+  //     // 2. Email validation (robust regex instead of just checking for '@')
+  //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //     if (!emailRegex.test(form.email)) return 'Enter a valid email address';
+
+  //     // 3. Phone number validation (checks for digits, common spaces/dashes, min length)
+  //     const phoneRegex = /^\+?[0-9\s\-]{7,15}$/;
+  //     if (!phoneRegex.test(form.phone)) return 'Enter a valid phone number';
+
+  //     // 4. Provider Professional Fields
+  //     if (!form.specialization.trim()) return 'Specialization is required';
+  //     if (!form.qualification.trim()) return 'Qualification is required';
+  //     if (!form.licenseNumber.trim()) return 'License number is required';
+
+  //     // 5. Experience Validation
+  //     const exp = parseInt(form.experienceYears, 10);
+  //     if (isNaN(exp) || exp < 0) {
+  //       return 'Experience must be a valid number of years';
+  //     }
+
+  //     // 6. Services & Bio
+  //     if (!form.services.trim()) return 'Please list at least one service offered';
+  //     if (!form.bio.trim() || form.bio.length < 20) {
+  //       return 'Bio is required and should be at least 20 characters long';
+  //     }
+
+  //     // 7. File Upload Validation (Optional but recommended)
+  //     if (!profileImage) {
+  //       return 'Please upload a profile image';
+  //     }
+
+  //     // 8. Password Security & Matching
+  //     if (form.password.length < 6) return 'Password must be at least 6 characters';
+  //     if (form.password !== form.confirmPassword) return 'Passwords do not match';
+
+  //     return ''; // No errors found
+  //   }
+
+  //   const validationError = validate()
+  //   if (validationError) {
+  //     setValidaitonError(validationError)
+  //     return
+  //   }
+
+  //   const response = dispatch(registerProvider(form)).unwrap();
+  //   navigate("/dashboard");
+
+  // }
+
+
+  import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { registerProvider } from "../../redux/authThunk";
+import { clearError } from "../../redux/slices/authSlice";
 
 export default function ProviderRegisterPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
 
   const [form, setForm] = useState({
     name: '',
@@ -18,53 +169,118 @@ export default function ProviderRegisterPage() {
     experienceYears: '',
     services: '',
     bio: '',
-  })
+  });
+  
+  const [verificationDoc, setVerificationDoc] = useState(null);
+  const [validationError, setValidationError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const [certificates, setCertificates] = useState([])
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("User is authenticated! Redirecting...");
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   function updateField(key, value) {
-    setForm((prev) => ({ ...prev, [key]: value }))
+    setForm((prev) => ({ ...prev, [key]: value }));
   }
 
   function onCertificateChange(event) {
-    const files = Array.from(event.target.files ?? [])
-    setCertificates(files.map((f) => f.name))
+    // Fixed: changed 'e' to 'event'
+    const file = event.target.files?.[0];
+    if (file) {
+      setVerificationDoc(file);
+    }
   }
 
-  function onSubmit(event) {
-    event.preventDefault()
-    setError('')
-    setSuccess('')
+  function validate() {
+    if (!form.name.trim()) return 'Name is required';
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) return 'Enter a valid email address';
+  
+    const phoneRegex = /^\+?[0-9\s\-]{7,15}$/;
+    if (!phoneRegex.test(form.phone)) return 'Enter a valid phone number';
+  
+    if (!form.specialization.trim()) return 'Specialization is required';
+    if (!form.qualification.trim()) return 'Qualification is required';
+    if (!form.licenseNumber.trim()) return 'License number is required';
+    
+    const exp = parseInt(form.experienceYears, 10);
+    if (isNaN(exp) || exp < 0) return 'Experience must be a valid number of years';
+  
+    if (!form.services.trim()) return 'Please list at least one service offered';
+    if (!form.bio.trim() || form.bio.length < 20) {
+      return 'Bio is required and should be at least 20 characters long';
+    }
+  
+    // Scope Fixed: Checks verificationDoc now
+    if (!verificationDoc) {
+      return 'Please upload a verification document';
+    }
+  
+    if (form.password.length < 6) return 'Password must be at least 6 characters';
+    if (form.password !== form.confirmPassword) return 'Passwords do not match';
+  
+    return ''; 
+  }
 
-    if (form.password.length < 6) {
-      setError('Password should be at least 6 characters.')
-      return
+  async function onSubmit(event) {
+    event.preventDefault();
+    setValidationError('');
+    setSuccess('');
+
+    // 1. Run local validations first
+    const errMsg = validate();
+    if (errMsg) {
+      setValidationError(errMsg);
+      return;
     }
 
-    if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match.')
-      return
+    // 2. Build Multi-part Form Data
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      if (key !== 'confirmPassword') {
+        formData.append(key, value);
+      }
+    });
+
+    if (verificationDoc) {
+      formData.append('verificationDoc', verificationDoc);
     }
 
-    const result = registerProviderAccount({ ...form, certificates })
+    // try {
+    //   // 3. CRITICAL: Pass formData object instead of plain form object
+    //   await dispatch(registerProvider(formData)).unwrap();
+    //   setSuccess('Registration initialization successful!');
+    // } catch (err) {
+    //   // Fallback if global Redux error handling isn't mapped to local view
+    //   setValidationError(err || 'Registration failed');
+    // }
 
-    if (!result.ok) {
-      setError(result.error)
-      return
+    try {
+      // 3. Pass formData object instead of plain form object
+      const actionResult = await dispatch(registerProvider(formData)).unwrap();
+      setSuccess('Registration initialization successful!');
+    } catch (err) {
+      // Sets error dynamically if unwrap yields a rejection string
+      setValidationError(err || 'Registration failed');
     }
-
-    setSuccess('Provider account registered successfully!')
-    setTimeout(() => navigate('/login', { replace: true }), 1000)
   }
 
   return (
 
     <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6] px-4 py-10">
-  
+
       <div className="w-full max-w-4xl bg-white rounded-3xl shadow-md border border-slate-300 p-10">
-  
+
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-semibold text-slate-600">
@@ -74,22 +290,22 @@ export default function ProviderRegisterPage() {
             Start your wellness journey today
           </p>
         </div>
-  
+
         {/* Form */}
         <form className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={onSubmit}>
-  
-          {error && (
+
+          {validationError && (
             <p className="md:col-span-2 rounded-xl bg-rose-50 border border-rose-200 px-4 py-2 text-sm text-rose-600">
-              {error}
+              {validationError}
             </p>
           )}
-  
+
           {success && (
             <p className="md:col-span-2 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm text-emerald-600">
               {success}
             </p>
           )}
-  
+
           {[
             { key: 'name', placeholder: 'Display Name' },
             { key: 'email', placeholder: 'Email', type: 'email' },
@@ -110,7 +326,7 @@ export default function ProviderRegisterPage() {
               className="w-full rounded-2xl border border-slate-300 bg-slate-100 px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-indigo-400"
             />
           ))}
-  
+
           {/* Bio */}
           <textarea
             rows={3}
@@ -120,22 +336,23 @@ export default function ProviderRegisterPage() {
             placeholder="Bio"
             className="md:col-span-2 w-full rounded-2xl border border-slate-300 bg-slate-100 px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-indigo-400"
           />
-  
+
           {/* Certificates */}
           <div className="md:col-span-2">
             <input
               type="file"
-              multiple
+              accept=".pdf,.jpg,.jpeg,.png"
+              // multiple
               onChange={onCertificateChange}
               className="w-full rounded-2xl border border-slate-300 bg-slate-100 px-5 py-4 text-sm"
             />
-            {certificates.length > 0 && (
+            {/* {certificates.length > 0 && (
               <p className="mt-2 text-xs text-slate-500">
                 {certificates.join(', ')}
               </p>
-            )}
+            )} */}
           </div>
-  
+
           {/* Password */}
           <input
             type="password"
@@ -145,7 +362,7 @@ export default function ProviderRegisterPage() {
             placeholder="Password"
             className="w-full rounded-2xl border border-slate-300 bg-slate-100 px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-indigo-400"
           />
-  
+
           {/* Confirm Password */}
           <input
             type="password"
@@ -155,7 +372,7 @@ export default function ProviderRegisterPage() {
             placeholder="Confirm Password"
             className="w-full rounded-2xl border border-slate-300 bg-slate-100 px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-indigo-400"
           />
-  
+
           {/* Button */}
           <button
             type="submit"
@@ -163,9 +380,9 @@ export default function ProviderRegisterPage() {
           >
             Create Account
           </button>
-  
+
         </form>
-  
+
         {/* Footer */}
         <p className="mt-6 text-center text-slate-500">
           Already have an account?{' '}
@@ -173,146 +390,8 @@ export default function ProviderRegisterPage() {
             Sign in
           </Link>
         </p>
-  
+
       </div>
     </div>
   )
-
-
-  // return (
-
-  //   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-teal-50 px-4 py-8">
-
-  //     <div className="w-full max-w-4xl bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
-
-  //       {/* Header */}
-  //       <div className="text-center">
-  //         <h1 className="text-2xl font-semibold text-slate-900">
-  //           Join as Provider 🌿
-  //         </h1>
-  //         <p className="mt-2 text-sm text-slate-500">
-  //           Share your expertise and help others heal
-  //         </p>
-  //       </div>
-
-  //       {/* Form */}
-  //       <form className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={onSubmit}>
-
-  //         {error && (
-  //           <p className="md:col-span-2 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-sm text-rose-700">
-  //             {error}
-  //           </p>
-  //         )}
-
-  //         {success && (
-  //           <p className="md:col-span-2 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">
-  //             {success}
-  //           </p>
-  //         )}
-
-  //         {[
-  //           { key: 'name', label: 'Full Name' },
-  //           { key: 'email', label: 'Email', type: 'email' },
-  //           { key: 'phone', label: 'Phone' },
-  //           { key: 'specialization', label: 'Specialization' },
-  //           { key: 'qualification', label: 'Qualification' },
-  //           { key: 'licenseNumber', label: 'License Number' },
-  //           { key: 'experienceYears', label: 'Experience (Years)', type: 'number' },
-  //           { key: 'services', label: 'Services (comma separated)' },
-  //         ].map((field) => (
-  //           <label key={field.key} className="block text-left">
-  //             <span className="text-sm font-medium text-slate-700">
-  //               {field.label}
-  //             </span>
-  //             <input
-  //               type={field.type || 'text'}
-  //               required
-  //               value={form[field.key]}
-  //               onChange={(e) => updateField(field.key, e.target.value)}
-  //               className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400 focus:border-teal-400 outline-none transition"
-  //             />
-  //           </label>
-  //         ))}
-
-  //         {/* Bio */}
-  //         <label className="block text-left md:col-span-2">
-  //           <span className="text-sm font-medium text-slate-700">
-  //             Bio
-  //           </span>
-  //           <textarea
-  //             rows={3}
-  //             required
-  //             value={form.bio}
-  //             onChange={(e) => updateField('bio', e.target.value)}
-  //             className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400 focus:border-teal-400 outline-none transition"
-  //           />
-  //         </label>
-
-  //         {/* Certificates */}
-  //         <label className="block text-left md:col-span-2">
-  //           <span className="text-sm font-medium text-slate-700">
-  //             Upload Certificates
-  //           </span>
-  //           <input
-  //             type="file"
-  //             multiple
-  //             onChange={onCertificateChange}
-  //             className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm"
-  //           />
-  //           {certificates.length > 0 && (
-  //             <p className="mt-2 text-xs text-slate-500">
-  //               {certificates.join(', ')}
-  //             </p>
-  //           )}
-  //         </label>
-
-  //         {/* Password */}
-  //         <label className="block text-left">
-  //           <span className="text-sm font-medium text-slate-700">
-  //             Password
-  //           </span>
-  //           <input
-  //             type="password"
-  //             required
-  //             value={form.password}
-  //             onChange={(e) => updateField('password', e.target.value)}
-  //             className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400 focus:border-teal-400 outline-none transition"
-  //           />
-  //         </label>
-
-  //         {/* Confirm Password */}
-  //         <label className="block text-left">
-  //           <span className="text-sm font-medium text-slate-700">
-  //             Confirm Password
-  //           </span>
-  //           <input
-  //             type="password"
-  //             required
-  //             value={form.confirmPassword}
-  //             onChange={(e) => updateField('confirmPassword', e.target.value)}
-  //             className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-400 focus:border-teal-400 outline-none transition"
-  //           />
-  //         </label>
-
-  //         {/* Button */}
-  //         <button
-  //           type="submit"
-  //           className="md:col-span-2 w-full rounded-lg bg-teal-500 text-white py-2.5 text-sm font-medium hover:bg-teal-600 transition"
-  //         >
-  //           Register as Provider
-  //         </button>
-
-  //       </form>
-
-  //       {/* Footer */}
-  //       <p className="mt-6 text-center text-sm text-slate-500">
-  //         Already have an account?{' '}
-  //         <Link to="/login" className="text-teal-600 hover:underline">
-  //           Sign in
-  //         </Link>
-  //       </p>
-
-  //     </div>
-  //   </div>
-  // )
 }

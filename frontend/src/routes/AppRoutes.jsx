@@ -24,6 +24,7 @@ import AdminLoginPage from '../pages/admin/AdminLoginPage';
 // Provider Pages
 import ProviderRegisterPage from '../pages/provider/ProviderRegisterPage';
 import ProviderDashboardPage from '../pages/provider/ProviderDashboardPage';
+import ForgotPasswordPage from '../pages/ForgotPassword';
 
 export default function AppRoutes() {
   return (
@@ -32,6 +33,8 @@ export default function AppRoutes() {
         {/* ================= PUBLIC & USER ROUTES ================= */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
 
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />

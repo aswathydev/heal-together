@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
+const connectDB = require("./config/db");
+
+// const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
@@ -12,16 +14,18 @@ app.use(cors({
 }));
 app.use(express.json());
 
+connectDB()
+
 // Database Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('🍀 Connected to MongoDB successfully'))
-  .catch(err => console.error('Database connection error:', err));
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(() => console.log('🍀 Connected to MongoDB successfully'))
+//   .catch(err => console.error('Database connection error:', err));
 
 // Route Registrations
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
-app.use('/api/provider', require('./routes/providerRoutes'));
-app.use('/api/user', require('./routes/userRoutes'));
+// app.use('/api/admin', require('./routes/adminRoutes'));
+// app.use('/api/provider', require('./routes/providerRoutes'));
+// app.use('/api/user', require('./routes/userRoutes'));
 
 // Global Error Handler
 app.use((err, req, res, next) => {
