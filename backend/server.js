@@ -12,6 +12,8 @@ app.use(cors({
   origin: 'http://localhost:5173', // Change to your frontend domain in production
   credentials: true
 }));
+
+// Middleware
 app.use(express.json());
 
 connectDB()
@@ -21,8 +23,12 @@ connectDB()
 //   .then(() => console.log('🍀 Connected to MongoDB successfully'))
 //   .catch(err => console.error('Database connection error:', err));
 
-// Route Registrations
-app.use('/api/auth', require('./routes/authRoutes'));
+// Import Routes
+const authRoutes = require('./routes/authRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+app.use('/api/auth', authRoutes);
+app.use('/api/chat', chatRoutes);
+
 // app.use('/api/admin', require('./routes/adminRoutes'));
 // app.use('/api/provider', require('./routes/providerRoutes'));
 // app.use('/api/user', require('./routes/userRoutes'));

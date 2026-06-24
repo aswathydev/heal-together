@@ -3,7 +3,7 @@ import { registerUser, loginUser, registerProvider } from "../authThunk";
 
 const initialState = {
   token: localStorage.getItem("token") || null,
-  user: null,
+  user: localStorage.getItem("user") || null,
   isAuthenticated: !!localStorage.getItem("token"),
   loading: false,
   error: null,
@@ -15,6 +15,7 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       state.token = null;
       state.user = null;
       state.isAuthenticated = false;
