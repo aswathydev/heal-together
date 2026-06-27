@@ -51,12 +51,42 @@
 
 
 import { Link } from 'react-router-dom'
-import { providers } from '../data/mockData'
+import { useState, useEffect } from 'react'
+import { getAllProviders } from "../services/providerService";
+
 
 export default function ProvidersPage() {
+  const [providers, setProviders] = useState([]);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  fetchProviders();
+}, []);
+
+const fetchProviders = async () => {
+  try {
+    const response = await getAllProviders();
+
+    console.log(response.data);
+
+    setProviders(response.data.data);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
-      
+
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">
@@ -83,7 +113,7 @@ export default function ProvidersPage() {
 function ProviderCard({ provider: p }) {
   return (
     <div className="group rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition p-5">
-      
+
       {/* Top Section */}
       <div className="flex items-start justify-between gap-3">
         <div>

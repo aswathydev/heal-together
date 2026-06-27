@@ -163,7 +163,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaComments } from "react-icons/fa";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 
 export default function FloatingChatButton() {
   const navigate = useNavigate();
@@ -179,7 +179,7 @@ export default function FloatingChatButton() {
 
     const userMsg = { sender: "user", text: input };
     setMessages(prev => [...prev, userMsg]);
-    
+
     const textToSend = input;
     setInput("");
     setLoading(true);
@@ -189,8 +189,8 @@ export default function FloatingChatButton() {
       const token = localStorage.getItem("token");
 
       // 2. Make the HTTP request to your backend route
-      const response = await axios.post(
-        "http://localhost:5000/api/chat", // Update port/URL if your backend differs
+      const response = await axiosInstance.post(
+        "/chat", // Update port/URL if your backend differs
         { message: textToSend },
         {
           headers: {
@@ -224,8 +224,95 @@ export default function FloatingChatButton() {
         <FaComments size={20} />
       </button>
 
+
       {/* Chat Popup */}
       {visible && (
+        <div className="fixed bottom-0 right-5 w-[350px] h-[500px] bg-white rounded-t-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 z-50">
+
+          {/* Header */}
+          <div className="bg-green-500 text-white px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-white text-green-500 flex items-center justify-center font-bold">
+                A
+              </div>
+              <span className="font-semibold">Talk to Aira</span>
+            </div>
+
+            <button
+              onClick={() => setVisible(false)}
+              className="hover:bg-green-600 p-1 rounded transition"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-3">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"
+                  }`}
+              >
+                <div
+                  className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm shadow-sm ${msg.sender === "user"
+                      ? "bg-green-500 text-white rounded-br-sm"
+                      : "bg-white text-gray-800 rounded-bl-sm border"
+                    }`}
+                >
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+
+            {/* Typing Indicator */}
+            {loading && (
+              <div className="flex justify-start">
+                <div className="bg-white border px-4 py-2 rounded-2xl rounded-bl-sm text-sm text-gray-500 italic shadow-sm">
+                  Aira is reflecting...
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Input */}
+          <div className="border-t bg-white p-3 flex items-center gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              placeholder={
+                loading ? "Waiting for response..." : "Type your message..."
+              }
+              disabled={loading}
+              className={`flex-1 px-4 py-2 rounded-xl border outline-none
+                bg-white text-black
+                dark:bg-slate-800 dark:text-white
+                placeholder:text-gray-500 dark:placeholder:text-gray-400
+                transition ${
+                  loading
+                    ? "bg-gray-100 dark:bg-slate-700 cursor-not-allowed"
+                    : "focus:ring-2 focus:ring-green-400"
+                }`}
+            />
+
+            <button
+              onClick={sendMessage}
+              disabled={loading}
+              className={`px-4 py-2 rounded-xl font-medium text-white transition ${loading
+                  ? "bg-green-300 cursor-not-allowed"
+                  : "bg-green-500 hover:bg-green-600"
+                }`}
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Chat Popup */}
+      {/* {visible && (
         <div
           style={{
             position: "fixed",
@@ -241,7 +328,6 @@ export default function FloatingChatButton() {
             overflow: "hidden"
           }}
         >
-          {/* Header */}
           <div
             style={{
               padding: "10px",
@@ -265,7 +351,6 @@ export default function FloatingChatButton() {
             </button>
           </div>
 
-          {/* Messages */}
           <div
             style={{
               flex: 1,
@@ -298,7 +383,6 @@ export default function FloatingChatButton() {
               </div>
             ))}
 
-            {/* Typing Indicator */}
             {loading && (
               <div style={{ textAlign: "left", marginBottom: "8px" }}>
                 <span
@@ -318,7 +402,6 @@ export default function FloatingChatButton() {
             )}
           </div>
 
-          {/* Input */}
           <div
             style={{
               display: "flex",
@@ -359,7 +442,7 @@ export default function FloatingChatButton() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 }

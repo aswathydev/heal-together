@@ -1,12 +1,27 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import heroImage from '../assets/hero_image.png'
+import heroImage from '../assets/hero-full-image.png'
+import heroBg from "../assets/hero-full-image.png";
 import Marquee from "react-fast-marquee/dist";
 import MoodPrompt from "../components/home/MoodPrompt";
 import { quotes, posts } from '../data/mockData'
+import { useDispatch, useSelector } from 'react-redux'
+import QuoteGenerator from "../components/home/QuoteGenerator";
+import {
+  addMood,
+  getHistory,
+  getWeekly,
+  getMonthly,
+  getStreak,
+  getAlert,
+  getAI,
+} from "../services/moodHistoryServices";
+
 
 export default function HomePage() {
   const daily = quotes[0]
+  const { user, token } = useSelector((state) => state.auth);
+  console.log(user);
 
   const moodStyles = {
     great: 'bg-emerald-100 text-emerald-700',
@@ -22,6 +37,26 @@ export default function HomePage() {
     return () => cancelAnimationFrame(id)
   }, [])
 
+
+  const handleAddMood = async (
+      mood,
+      note
+    ) => {
+      try {
+        await addMood({
+          mood,
+          note,
+        });
+    
+        // refresh dashboard
+        loadMoodData();
+      } catch (err) {
+        console.log(err);
+      }
+    };
+  
+
+
   return (
     <div className="space-y-6">
 
@@ -34,12 +69,54 @@ export default function HomePage() {
         )}
       </div>
 
+
+      {/* <div className="bg-gradient-to-r from-cyan-50 via-white to-blue-50 border border-cyan-100 text-slate-700 py-2 px-4 rounded-xl shadow-sm">
+  {mounted && (
+    <Marquee.default speed={50} gradient={false}>
+      🚨 Urgent: 🩸 A+ blood required for emergency surgery | Location: Kochi | Contact immediately
+    </Marquee.default>
+  )}
+</div> */}
+
+      {/* 
+<div className="
+  bg-gradient-to-r
+  from-cyan-500
+  via-blue-500
+  to-indigo-600
+  text-white
+  py-2
+  px-4
+  rounded-xl
+  shadow-lg
+">
+  {mounted && (
+    <Marquee.default speed={50} gradient={false}>
+      🚨 Urgent: 🩸 A+ blood required for emergency surgery | Location: Kochi | Contact immediately
+    </Marquee.default>
+  )}
+</div> */}
+
       {/* 🌿 Hero Section */}
-      <section className="rounded-3xl bg-gradient-to-br from-indigo-50 via-white to-cyan-50 p-8 sm:p-12 shadow-sm">
+      <section
+        className="
+    rounded-3xl
+    shadow-sm
+    min-h-[85vh]
+    bg-cover
+    bg-center
+    bg-no-repeat
+    relative
+    overflow-hidden
+  "
+        style={{
+          backgroundImage: `url(${heroBg})`,
+        }}
+      >
+        {/* <section className="rounded-3xl bg-gradient-to-br from-indigo-50 via-white to-cyan-50 p-8 sm:p-12 shadow-sm"> */}
 
-        <div className="flex flex-col-reverse sm:flex-row items-center gap-10">
+        {/* <div className="flex flex-col-reverse sm:flex-row items-center gap-10">
 
-          {/* LEFT */}
           <div className="w-full sm:w-1/2 text-center sm:text-left">
 
             <p className="text-indigo-500 text-xs font-semibold uppercase tracking-wider">
@@ -74,12 +151,182 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* RIGHT IMAGE */}
           <div className="w-full sm:w-1/2">
             <img
               src={heroImage}
               className="w-full max-w-md mx-auto drop-shadow-md"
             />
+          </div>
+        </div> */}
+
+
+        {/* <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-indigo-50 via-white to-cyan-50 p-8 md:p-16 shadow-xl">
+
+<div className="grid lg:grid-cols-2 gap-12 items-center"> */}
+
+        <div className="
+  max-w-7xl
+  mx-auto
+  px-6
+  py-20
+">
+          <div className="
+    grid
+    lg:grid-cols-2
+    gap-16
+    items-center
+  ">
+            {/* LEFT CONTENT */}
+            <div className="space-y-6">
+
+              <span
+                className="
+    animate-soft-blink
+    inline-flex
+    items-center
+    rounded-full
+    bg-indigo-100
+    px-4
+    py-2
+    text-sm
+    font-semibold
+    text-indigo-700
+  "
+              >
+                ✨ Mental Wellness Platform
+              </span>
+
+              {/* <h1 className="
+      text-4xl
+      md:text-6xl
+      font-bold
+      leading-tight
+      text-slate-900
+    ">
+                Heal Together,
+                <span className="block bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">
+                  Grow Stronger
+                </span>
+              </h1> */}
+
+              <h1
+                className="
+    animate-[fadeInUp_1s_ease-out]
+    text-4xl
+    md:text-6xl
+    font-bold
+    leading-tight
+    text-slate-900
+  "
+              >
+                Heal Together,
+                <span className="block bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-transparent">
+                  Grow Stronger
+                </span>
+              </h1>
+
+              <p className="
+      max-w-xl
+      text-lg
+      leading-8
+      text-slate-600
+    ">
+                A safe space to share, reflect, and improve your
+                mental well-being through AI support, journaling,
+                mood tracking, and a caring community.
+              </p>
+
+              {user?.role === 'user' && (
+
+                <div className="flex flex-wrap gap-4">
+
+                  <Link
+                    to="/feed"
+                    className="
+          rounded-2xl
+          bg-gradient-to-r
+          from-indigo-500
+          to-blue-600
+          px-8
+          py-4
+          font-semibold
+          text-white
+          shadow-lg
+          hover:scale-105
+          transition
+        "
+                  >
+                    Share Thoughts
+                  </Link>
+
+                  <Link
+                    to="/emergency"
+                    className="
+          rounded-2xl
+          border
+          border-slate-200
+          bg-white
+          px-8
+          py-4
+          font-semibold
+          text-slate-700
+          shadow-sm
+          hover:bg-slate-50
+          transition
+        "
+                  >
+                    Emergency Help
+                  </Link>
+
+                </div>
+              )}
+
+              <div className="flex gap-8 pt-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-white-900">24/7</h3>
+                  <p className="text-white-500">AI Support</p>
+                </div>
+
+                <div>
+                  <h3 className="text-2xl font-bold text-white-900">100%</h3>
+                  <p className="text-white-500">Private</p>
+                </div>
+
+                <div>
+                  <h3 className="text-2xl font-bold text-white-900">❤️</h3>
+                  <p className="text-white-500">Community</p>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT IMAGE */}
+            {/* <div className="relative">
+
+              <div className="
+                    absolute
+                    -inset-4
+                    bg-gradient-to-r
+                    from-indigo-300
+                    to-cyan-300
+                    blur-3xl
+                    opacity-20
+                    rounded-full
+                  " />
+
+              <img
+                src={heroImage}
+                alt=""
+                className="
+                    animate-float
+                    relative
+                    w-full
+                    max-w-xl
+                    mx-auto
+                    rounded-3xl
+                    shadow-2xl
+                  "
+                          />
+            </div> */}
           </div>
         </div>
       </section>
@@ -88,7 +335,7 @@ export default function HomePage() {
       <section className="flex flex-col md:flex-row gap-6">
 
         {/* Quote Card */}
-        <div className="w-full md:flex-[7] rounded-3xl bg-white p-6 shadow-sm">
+        {/* <div className="w-full md:flex-[7] rounded-3xl bg-white p-6 shadow-sm">
 
           <p className="text-xs font-semibold uppercase text-indigo-400 tracking-wide">
             Quote of the day
@@ -101,13 +348,36 @@ export default function HomePage() {
           <p className="mt-3 text-sm text-slate-500">
             — {daily.author}
           </p>
-        </div>
+        </div> */}
 
         {/* Mood */}
-        <div className="w-full md:flex-[3]">
-          <MoodPrompt />
-        </div>
+        {token &&
+          <div className="w-full md:flex-[3]">
+            <MoodPrompt handleAddMood={(value) => {
+              handleAddMood(value, 'note');
+            }} />
+          </div>
+        }
       </section>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div className="rounded-xl p-6 bg-white shadow">
+          <h3>Mood Score</h3>
+          <p>3.8 / 4</p>
+        </div>
+
+        <div className="rounded-xl p-6 bg-white shadow">
+          <h3>🔥 Streak</h3>
+          <p>7 Days</p>
+        </div>
+
+        <div className="rounded-xl p-6 bg-white shadow">
+          <h3>⚠️ Alert</h3>
+          <p>No concerns</p>
+        </div>
+
+      </div>
 
 
       {/* 📖 About Section */}
@@ -245,6 +515,10 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section>
+        <QuoteGenerator />
       </section>
 
     </div>

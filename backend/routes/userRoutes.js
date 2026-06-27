@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect, authorizeRoles } = require('../middleware/auth');
+const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 const { addMoodRecord, getMoodHistory, getAllPublicProviders } = require('../controllers/userController');
 
 // Anyone can see available therapists/providers

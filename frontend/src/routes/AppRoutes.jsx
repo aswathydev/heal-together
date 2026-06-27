@@ -25,6 +25,10 @@ import AdminLoginPage from '../pages/admin/AdminLoginPage';
 import ProviderRegisterPage from '../pages/provider/ProviderRegisterPage';
 import ProviderDashboardPage from '../pages/provider/ProviderDashboardPage';
 import ForgotPasswordPage from '../pages/ForgotPassword';
+import GamesPage from '../pages/GamesPage';
+import MoodPage from '../pages/MoodPage';
+import EmergencySupportPage from '../pages/EmergencySupport';
+import Contact from '../pages/ContactUs';
 
 export default function AppRoutes() {
   return (
@@ -40,6 +44,13 @@ export default function AppRoutes() {
           <Route path="/" element={<HomePage />} />
           <Route path="/providers" element={<ProvidersPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/games" element={<GamesPage />} />
+          <Route path="/mood-history" element={<MoodPage />} />
+          <Route path='/emergency' element={<EmergencySupportPage />} />
+          <Route path='/contactus' element={<Contact />} />
+
+         
+
           {/* Add your other public/user routes here */}
         </Route>
 

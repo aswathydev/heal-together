@@ -26,11 +26,18 @@ connectDB()
 // Import Routes
 const authRoutes = require('./routes/authRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const quoteRoutes = require('./routes/quotesRoutes');
+const moodRoutes = require("./routes/moodRoutes");
+
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/quotes', quoteRoutes);
+app.use("/api/moods", moodRoutes);
+
+
+app.use('/api/provider', require('./routes/providerRoutes'));
 
 // app.use('/api/admin', require('./routes/adminRoutes'));
-// app.use('/api/provider', require('./routes/providerRoutes'));
 // app.use('/api/user', require('./routes/userRoutes'));
 
 // Global Error Handler
