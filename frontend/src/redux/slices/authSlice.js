@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { registerUser, loginUser, registerProvider } from "../authThunk";
+import { registerUser, loginUser, registerProvider, loginAdminThunk } from "../authThunk";
 
 const initialState = {
   token: localStorage.getItem("token") || null,
@@ -42,7 +42,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      
+
       // ==================== LOGIN USER ====================
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
@@ -77,7 +77,21 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
-      
+      .addCase(loginAdminThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginAdminThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.token = action.payload.token;
+        state.user = action.payload.user; // role: 'admin'
+      })
+      .addCase(loginAdminThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
   },
 });
 

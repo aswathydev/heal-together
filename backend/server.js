@@ -28,11 +28,17 @@ const authRoutes = require('./routes/authRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const quoteRoutes = require('./routes/quotesRoutes');
 const moodRoutes = require("./routes/moodRoutes");
+const postRoutes = require('./routes/postRoutes');
+const journalRoutes = require('./routes/journalRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/quotes', quoteRoutes);
 app.use("/api/moods", moodRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/journals', journalRoutes);
+app.use('/api/contacts', contactRoutes);
 
 
 app.use('/api/provider', require('./routes/providerRoutes'));

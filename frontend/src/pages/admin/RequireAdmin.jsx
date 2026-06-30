@@ -20,16 +20,19 @@
 
 
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+// import { useAuth } from '../../context/AuthContext';
+import { useDispatch, useSelector } from 'react-redux'
 
 export default function RequireAdmin() {
-  const { user, loading } = useAuth();
+  // const { user, loading } = useAuth();
+  const { user, token } = useSelector((state) => state.auth);
+
   const location = useLocation();
 
   // ⏳ Wait until auth is ready
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
   if (!user || user.role !== 'admin') {
     return (

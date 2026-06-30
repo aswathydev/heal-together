@@ -10,7 +10,7 @@ import { clearError } from "../redux/slices/authSlice";
 export default function RegisterPage() {
   const navigate = useNavigate()
   const dispatch = useDispatch();
-  const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
+  const { loading, error, isAuthenticated, user } = useSelector((state) => state.auth);
 
   const [form, setForm] = useState({
     name: '',
@@ -33,12 +33,9 @@ export default function RegisterPage() {
 
   // Redirect or show success message if authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      // e.g., navigate("/dashboard") using react-router-dom if you have it
-      console.log("User is authenticated! Redirecting...");
-      navigate("/dashboard");
-    }
-  }, [isAuthenticated]);
+      navigate("/")
+  
+  }, [isAuthenticated, navigate]);
 
 
   const handleSubmit = (e) => {
@@ -53,7 +50,7 @@ export default function RegisterPage() {
       }
 
       const response = dispatch(registerUser(form)).unwrap();
-      navigate("/dashboard");
+      // navigate("/dashboard");
   };
 
 

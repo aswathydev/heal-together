@@ -2,6 +2,7 @@
 const express = require("express");
 
 const router = express.Router();
+const { userOnly } = require("../middleware/roleMiddleware");
 
 const {
   registerUser,
@@ -9,6 +10,7 @@ const {
   registerProvider,
   loginProvider,
   getMe,
+  loginAdmin,
 } = require("../controllers/authController");
 
 const protect = require("../middleware/authMiddleware");
@@ -48,6 +50,13 @@ router.get(
   "/me",
   protect,
   getMe
+);
+
+
+
+router.post(
+  "/admin/login",
+  loginAdmin
 );
 
 module.exports = router;

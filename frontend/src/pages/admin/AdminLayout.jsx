@@ -10,8 +10,10 @@ import {
   FaTimes,
   FaSignOutAlt,
 } from 'react-icons/fa'
-import { useAuth } from '../../context/AuthContext'
+// import { useAuth } from '../../context/AuthContext'
 import { FaMessage, FaReceipt, FaServicestack } from 'react-icons/fa6'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout } from '../../redux/slices/authSlice'
 
 const nav = [
   { to: '/admin', label: 'Overview', icon: FaChartPie, end: true },
@@ -46,12 +48,19 @@ export default function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
+  const dispatch = useDispatch()
+
+  // const { user, logout } = useAuth()
+  const { loading, error, isAuthenticated, user } = useSelector((state) => state.auth);
+
   const pageTitle = titles[pathname] ?? 'Admin'
 
   function handleLogout() {
-    logout()
+    // logout()
     navigate('/admin/login', { replace: true })
+
+    dispatch(logout())
+    
   }
 
   return (

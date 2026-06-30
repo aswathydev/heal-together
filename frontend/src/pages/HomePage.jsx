@@ -39,22 +39,22 @@ export default function HomePage() {
 
 
   const handleAddMood = async (
-      mood,
-      note
-    ) => {
-      try {
-        await addMood({
-          mood,
-          note,
-        });
-    
-        // refresh dashboard
-        loadMoodData();
-      } catch (err) {
-        console.log(err);
-      }
-    };
-  
+    mood,
+    note
+  ) => {
+    try {
+      await addMood({
+        mood,
+        note,
+      });
+
+      // refresh dashboard
+      loadMoodData();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
 
 
   return (
@@ -241,7 +241,7 @@ export default function HomePage() {
                 <div className="flex flex-wrap gap-4">
 
                   <Link
-                    to="/feed"
+                    to="/FeedPage"
                     className="
           rounded-2xl
           bg-gradient-to-r
@@ -351,7 +351,7 @@ export default function HomePage() {
         </div> */}
 
         {/* Mood */}
-        {token &&
+        {token && (user?.role === 'user') && 
           <div className="w-full md:flex-[3]">
             <MoodPrompt handleAddMood={(value) => {
               handleAddMood(value, 'note');
@@ -359,6 +359,8 @@ export default function HomePage() {
           </div>
         }
       </section>
+
+      {token && (user?.role === 'user') && 
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
@@ -378,7 +380,7 @@ export default function HomePage() {
         </div>
 
       </div>
-
+    }
 
       {/* 📖 About Section */}
       <section id="about" className="rounded-3xl bg-white p-8 sm:p-10 shadow-sm">
@@ -469,57 +471,61 @@ export default function HomePage() {
       </section>
 
       {/* 🌍 Community Posts */}
-      <section className="space-y-4">
+      {token && (user?.role === 'user') && 
 
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-slate-900">
-            Community posts
-          </h2>
+        <section className="space-y-4">
 
-          <Link
-            to="/feed"
-            className="text-sm text-indigo-500 hover:underline"
-          >
-            View all
-          </Link>
-        </div>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-slate-900">
+              Community posts
+            </h2>
 
-        <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-
-          {posts.map((post) => (
-            <div
-              key={post.id}
-              className="min-w-[260px] max-w-[260px] rounded-2xl bg-white p-4 shadow-sm hover:shadow-md transition"
+            <Link
+              to="/feed"
+              className="text-sm text-indigo-500 hover:underline"
             >
+              View all
+            </Link>
+          </div>
 
-              {/* Header */}
-              <div className="flex justify-between mb-2">
-                <span className="font-medium text-slate-800 text-sm">
-                  {post.user}
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+
+            {posts.map((post) => (
+              <div
+                key={post.id}
+                className="min-w-[260px] max-w-[260px] rounded-2xl bg-white p-4 shadow-sm hover:shadow-md transition"
+              >
+
+                {/* Header */}
+                <div className="flex justify-between mb-2">
+                  <span className="font-medium text-slate-800 text-sm">
+                    {post.user}
+                  </span>
+                  <span className="text-xs text-slate-400">
+                    {post.time}
+                  </span>
+                </div>
+
+                {/* Mood */}
+                <span className={`inline-block text-[10px] px-2 py-1 rounded-full mb-2 ${moodStyles[post.mood]}`}>
+                  {post.mood}
                 </span>
-                <span className="text-xs text-slate-400">
-                  {post.time}
-                </span>
+
+                {/* Text */}
+                <p className="text-xs text-slate-600 line-clamp-3">
+                  {post.text}
+                </p>
+
               </div>
-
-              {/* Mood */}
-              <span className={`inline-block text-[10px] px-2 py-1 rounded-full mb-2 ${moodStyles[post.mood]}`}>
-                {post.mood}
-              </span>
-
-              {/* Text */}
-              <p className="text-xs text-slate-600 line-clamp-3">
-                {post.text}
-              </p>
-
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <QuoteGenerator />
-      </section>
+            ))}
+          </div>
+        </section>
+      }
+      {token && (user?.role === 'user') && 
+        <section>
+          <QuoteGenerator />
+        </section>
+      }
 
     </div>
   )

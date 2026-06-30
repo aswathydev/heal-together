@@ -228,6 +228,45 @@ exports.loginProvider =
     }
   };
 
+
+
+  exports.loginAdmin = async (req, res) => {
+    const { email, password } = req.body;
+  
+    try {
+      const admin = await User.findOne({ email });
+      if (!admin) {
+        return res.status(401).json({ message: 'Invalid admin credentials' });
+      }
+  
+      const isMatch = await bcrypt.compare(password, admin.password);
+      if (!isMatch) {
+        return res.status(401).json({ message: 'Invalid admin credentials' });
+      }
+  
+      // Sign token containing admin credentials and explicit role
+      const token = jwt.sign(
+        { id: admin._id, role: 'admin' },
+        process.env.JWT_SECRET,
+        { expiresIn: '1d' }
+      );
+  
+      res.status(200).json({
+        token,
+        user: {
+          id: admin._id,
+          email: admin.email,
+          role: 'admin',
+          name: admin.name
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Server error during admin login' });
+    }
+  };
+
+  
+
 // CURRENT USER
 
 exports.getMe = async (

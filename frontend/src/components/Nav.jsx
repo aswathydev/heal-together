@@ -12,6 +12,7 @@ const links = [
   { to: '/', label: 'Home' },
   { to: '/games', label: 'Games' },
   { to: '/providers', label: 'Support' },
+  { to: '/journals', label: 'Journaling' }
 ]
 
 
@@ -44,7 +45,7 @@ export default function Nav() {
   function handleLogout() {
     // 3. Dispatch the logout action to clear Redux + localStorage
     dispatch(logout())
-    navigate('/', { replace: true })
+    navigate('/login', { replace: true })
     setOpen(false)
   }
 
@@ -62,25 +63,26 @@ export default function Nav() {
 ">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
-      <Link to="/" className="flex items-center gap-3">
-  {/* <img
+        <Link to="/" className="flex items-center gap-3">
+          {/* <img
     src={logo3}
     alt="Heal Together"
     className="h-16 w-16 object-contain"
   /> */}
 
-  <div>
-  {/* className="hidden md:block leading-none" */}
-    <h1 className="text-3xl font-bold tracking-tight">
-      <span className="text-sky-500">Heal</span>
-      <span className="text-green-500">Together</span>
-    </h1>
+          <div>
+            {/* className="hidden md:block leading-none" */}
+            <h1 className="text-3xl font-bold tracking-tight">
+              <span className="text-sky-500">Heal</span>
+              <span className="text-green-500">Together</span>
+            </h1>
 
-    <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 mt-1">
-      Mental Wellness
-    </p>
-  </div>
-</Link>
+            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 mt-1">
+              Mental Wellness
+            </p>
+          </div>
+        </Link>
+
         {/* <Link to="/" className="flex items-center gap-3">
           <img
             src={logo3}
@@ -105,42 +107,45 @@ export default function Nav() {
           </span>
         </Link> */}
 
-        <nav className="hidden lg:flex items-center gap-6">
+        {user?.role === 'user' && (
+
+          <nav className="hidden lg:flex items-center gap-6">
 
 
-          {links.map((l) => {
-            if (l.to.includes("#")) {
-              return (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  className={`px-5 py-2 rounded-full ${location.hash === l.to.split("#")[1]
+            {links.map((l) => {
+              if (l.to.includes("#")) {
+                return (
+                  <Link
+                    key={l.to}
+                    to={l.to}
+                    className={`px-5 py-2 rounded-full ${location.hash === l.to.split("#")[1]
                       ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white"
                       : "text-slate-700"
-                    }`}
+                      }`}
+                  >
+                    {l.label}
+                  </Link>
+                );
+              }
+
+              return (
+                <NavLink
+                  key={l.to}
+                  to={l.to}
+                  end
+                  className={navClass}
                 >
                   {l.label}
-                </Link>
+                </NavLink>
               );
-            }
-
-            return (
-              <NavLink
-                key={l.to}
-                to={l.to}
-                end
-                className={navClass}
-              >
-                {l.label}
-              </NavLink>
-            );
-          })}
-        </nav>
+            })}
+          </nav>
+        )}
 
         {/* Right Actions */}
         <div className="hidden lg:flex items-center gap-3">
           {/* Mood History Icon */}
-          {token ? <Link
+          {(token && (user?.role === 'user'))? <Link
             to="/mood-history"
             className="p-2 rounded-full hover:bg-slate-100 transition"
             title="Mood History"
@@ -161,14 +166,14 @@ export default function Nav() {
           </Link> : null}
 
           {token ? (
-  <div className="flex items-center gap-3">
-    
-    {/* Profile */}
-    <Link
-      to="/profile"
-      title={user?.email}
-      aria-label={`Open profile for ${user?.email}`}
-      className="
+            <div className="flex items-center gap-3">
+
+              {/* Profile */}
+              <Link
+                to={(user?.role === 'user') ? "/profile" : "/provider/dashboard"}
+                title={user?.email}
+                aria-label={`Open profile for ${user?.email}`}
+                className="
         flex items-center justify-center
         h-11 w-11
         rounded-full
@@ -181,15 +186,15 @@ export default function Nav() {
         hover:scale-105
         hover:shadow-md
       "
-    >
-      <FaUserCircle className="h-7 w-7 text-cyan-600" />
-    </Link>
+              >
+                <FaUserCircle className="h-7 w-7 text-cyan-600" />
+              </Link>
 
-    {/* Logout */}
-    <button
-      type="button"
-      onClick={handleLogout}
-      className="
+              {/* Logout */}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="
         px-5 py-2.5
         rounded-full
         font-semibold
@@ -204,17 +209,17 @@ export default function Nav() {
         hover:text-red-600
         hover:shadow-md
       "
-    >
-      Logout
-    </button>
-  </div>
-) : (
-  <div className="flex items-center gap-3">
-    
-    {/* Login */}
-    <Link
-      to="/login"
-      className="
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+
+              {/* Login */}
+              <Link
+                to="/login"
+                className="
         px-5 py-2.5
         rounded-full
         text-sm
@@ -227,14 +232,14 @@ export default function Nav() {
         hover:bg-slate-50
         hover:shadow-md
       "
-    >
-      Login
-    </Link>
+              >
+                Login
+              </Link>
 
-    {/* Sign Up */}
-    <Link
-      to="/register"
-      className="
+              {/* Sign Up */}
+              <Link
+                to="/register"
+                className="
         px-6 py-2.5
         rounded-full
         text-sm
@@ -249,11 +254,11 @@ export default function Nav() {
         hover:scale-105
         hover:shadow-xl
       "
-    >
-      Sign Up
-    </Link>
-  </div>
-)}
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Mobile menu toggle */}

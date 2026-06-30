@@ -1,9 +1,12 @@
 import { Navigate, Link } from 'react-router-dom'
 import { FaUserCircle } from 'react-icons/fa'
-import { useAuth } from '../context/AuthContext'
+// import { useAuth } from '../context/AuthContext'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default function ProfilePage() {
-  const { user } = useAuth()
+  const { user, token } = useSelector((state) => state.auth);
+  console.log('USER 123:', user);
+  // const { user } = useAuth()
 
   if (!user) {
     return <Navigate to="/login" replace state={{ from: '/profile' }} />

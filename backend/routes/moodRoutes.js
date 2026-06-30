@@ -41,7 +41,7 @@ const express =
 const router =
   express.Router();
 
-const auth =
+const protect =
   require("../middleware/authMiddleware");
 
 const mood =
@@ -49,43 +49,43 @@ const mood =
 
 router.post(
   "/",
-  auth,
+  protect,
   mood.addMood
 );
 
 router.get(
   "/history",
-  auth,
+  protect,
   mood.getHistory
 );
 
 router.get(
   "/weekly",
-  auth,
+  protect,
   mood.weeklyTrend
 );
 
 router.get(
   "/monthly",
-  auth,
+  protect,
   mood.monthlyTrend
 );
 
 router.get(
   "/streak",
-  auth,
+  protect,
   mood.streak
 );
 
 router.get(
   "/alert",
-  auth,
+  protect,
   mood.alert
 );
 
 router.get(
   "/analysis",
-  auth,
+  protect,
   mood.aiAnalysis
 );
 

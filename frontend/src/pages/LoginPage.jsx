@@ -27,9 +27,13 @@ const LoginPage = () => {
   // 4. Redirect user to dashboard/home if already logged in
   useEffect(() => {
     if (isAuthenticated) {
-        navigate("/dashboard");
+      if (user?.role === 'user') {
+        navigate("/")
+      } else {
+        navigate("/provider/dashboard")
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const handleChange = (e) => {
     setFormData({

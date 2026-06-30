@@ -67,7 +67,7 @@ const fetchProviders = async () => {
   try {
     const response = await getAllProviders();
 
-    console.log(response.data);
+    console.log('PROVIDERS 11:11', response.data);
 
     setProviders(response.data.data);
   } catch (error) {
@@ -100,7 +100,7 @@ const fetchProviders = async () => {
       {/* Grid */}
       <ul className="grid gap-5 md:grid-cols-2">
         {providers.map((p) => (
-          <li key={p.id}>
+          <li key={p._id}>
             <ProviderCard provider={p} />
           </li>
         ))}
@@ -152,7 +152,7 @@ function ProviderCard({ provider: p }) {
 
       {/* CTA */}
       <Link
-        to={`/providers/${p.id}`}
+        to={`/providers/${p._id}`}
         className="mt-5 inline-block text-sm font-medium text-teal-600 hover:text-teal-700"
       >
         View profile →

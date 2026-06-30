@@ -32,6 +32,7 @@ export const registerUser = createAsyncThunk(
       
       // Save token immediately on success
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       
       return data;
     } catch (error) {
@@ -51,7 +52,8 @@ export const loginUser = createAsyncThunk(
       
       // Save token immediately on success
       localStorage.setItem("token", data.token);
-      
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -100,6 +102,11 @@ export const registerProvider = createAsyncThunk(
         localStorage.setItem('token', response.data.token);
       }
 
+      if (response.data.user) {
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+      }
+
+
       return response.data; // Contains { success: true, token, provider }
     } catch (error) {
       // Return custom error message from backend or fallback to generic message
@@ -108,6 +115,29 @@ export const registerProvider = createAsyncThunk(
           ? error.response.data.message
           : error.message
       );
+    }
+  }
+);
+
+
+
+// import { createAsyncThunk } from "@reduxjs/toolkit";
+// import axios from "axios";
+
+export const loginAdminThunk = createAsyncThunk(
+  "auth/loginAdmin",
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      // Hits your exact controller endpoint
+      const response = await axiosInstance.post("/auth/admin/login", { email, password });
+      
+      // Save credentials instantly to localStorage
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      
+      return response.data; 
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Admin login failed");
     }
   }
 );
