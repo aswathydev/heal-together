@@ -31,6 +31,9 @@ const moodRoutes = require("./routes/moodRoutes");
 const postRoutes = require('./routes/postRoutes');
 const journalRoutes = require('./routes/journalRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const availabilityRoutes = require("./routes/availabilityRoutes");
+// const appointmentRoutes = require("./routes/appointmentsRoutes");
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
@@ -39,9 +42,22 @@ app.use("/api/moods", moodRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/journals', journalRoutes);
 app.use('/api/contacts', contactRoutes);
+/* Availability */
+app.use(
+  "/api/availability",
+  availabilityRoutes
+);
+
+/* Appointments */
+// app.use(
+//   "/api/appointments",
+//   appointmentRoutes
+// );
 
 
 app.use('/api/provider', require('./routes/providerRoutes'));
+
+// app.use("/api/appointments", appointmentRoutes);
 
 // app.use('/api/admin', require('./routes/adminRoutes'));
 // app.use('/api/user', require('./routes/userRoutes'));

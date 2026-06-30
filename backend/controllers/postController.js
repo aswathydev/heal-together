@@ -41,7 +41,7 @@ exports.createPost = async (req, res) => {
 exports.getFeed = async (req, res) => {
   try {
     const feed = await Post.find({ isFlagged: false })
-      .populate('userId', 'username') // Pulls username from user collection
+      .populate('userId', 'name') // Pulls username from user collection
       .sort({ createdAt: -1 });
     res.json(feed);
   } catch (err) {

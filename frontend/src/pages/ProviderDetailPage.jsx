@@ -1,194 +1,383 @@
-import { Link, useParams } from 'react-router-dom'
-import { providers } from '../data/mockData'
-
-const sampleReviews = [
-  { id: 'r1', user: 'Jamie', stars: 5, text: 'Warm and practical — helped me with anxiety tools.' },
-  { id: 'r2', user: 'Riley', stars: 4, text: 'Great listener. Scheduling was easy.' },
-]
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { getProviderAvailability } from "../services/availabilityService";
+// import { createAppointment } from "../services/appointmentService";
 
 export default function ProviderDetailPage() {
-  const { id } = useParams()
-  const p = providers.find((x) => x.id === id)
+  const { id } = useParams();
 
-  if (!p) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-slate-500">Provider not found.</p>
-        <Link to="/providers" className="mt-4 inline-block text-teal-600 font-medium hover:underline">
-          ← Back to directory
-        </Link>
-      </div>
-    )
-  }
+  const [availability, setAvailability] = useState([]);
+  const [selectedDay, setSelectedDay] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
+
+  const [appointmentDate, setAppointmentDate] = useState("");
+  const [sessionType, setSessionType] = useState("video");
+  const [notes, setNotes] = useState("");
+
+  const [loading, setLoading] = useState(true);
+  const [booking, setBooking] = useState(false);
+
+  useEffect(() => {
+    loadProviderData();
+  }, [id]);
+
+  const loadProviderData = async () => {
+    try {
+      setLoading(true);
+
+      const availabilityRes =
+        await getProviderAvailability(id);
+
+      setAvailability(
+        availabilityRes.data.data
+      );
+
+      if (
+        availabilityRes.data.data.length
+      ) {
+        setSelectedDay(
+          availabilityRes.data.data[0].day
+        );
+
+        setSelectedTime(
+          availabilityRes.data.data[0]
+            .startTime
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBook = async (e) => {
+    e.preventDefault();
+
+    // try {
+    //   setBooking(true);
+
+    //   await createAppointment({
+    //     providerId: id,
+    //     appointmentDate,
+    //     day: selectedDay,
+    //     startTime: selectedTime,
+    //     sessionType,
+    //     notes,
+    //   });
+
+    //   alert(
+    //     "Appointment booked successfully"
+    //   );
+
+    //   setAppointmentDate("");
+    //   setNotes("");
+    // } catch (err) {
+    //   console.log(err);
+    // } finally {
+    //   setBooking(false);
+    // }
+  };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-8">
+    <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
 
       {/* Back */}
-      <Link to="/providers" className="text-sm text-teal-600 hover:underline">
-        ← All providers
+      <Link
+        to="/providers"
+        className="
+          text-cyan-600
+          font-medium
+          hover:underline
+        "
+      >
+        ← Back to providers
       </Link>
 
-      {/* Provider Info */}
-      <header className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
-        <h1 className="text-2xl font-semibold text-slate-900">{p.name}</h1>
-        <p className="text-slate-500">{p.role}</p>
+      {/* Provider Card */}
+      <section className="
+        rounded-3xl
+        bg-gradient-to-br
+        from-cyan-50
+        via-white
+        to-emerald-50
+        border
+        border-slate-200
+        p-8
+        shadow-sm
+      ">
+        <h1 className="text-3xl font-bold text-slate-500">
+          Provider Name
+        </h1>
 
-        <div className="mt-3 flex items-center gap-3">
-          <span className="text-amber-500 font-semibold">★ {p.rating}</span>
-          <span className="text-slate-400 text-sm">{p.reviews} reviews</span>
-        </div>
-
-        <p className="mt-4 text-slate-600 leading-relaxed">{p.bio}</p>
-
-        {/* Services */}
-        <h2 className="mt-6 text-xs font-semibold uppercase tracking-wide text-slate-400">
-          Services
-        </h2>
-        <ul className="mt-2 flex flex-wrap gap-2">
-          {p.services.map((s) => (
-            <li
-              key={s}
-              className="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600"
-            >
-              {s}
-            </li>
-          ))}
-        </ul>
-      </header>
-
-      {/* Booking */}
-      <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-slate-900">
-          Book a session
-        </h2>
-
-        <p className="text-xs text-green-600 mt-1">Available today</p>
-        <p className="text-sm text-slate-500 mt-2">
-          45 mins • ₹999 per session
+        <p className="text-slate-500 mt-2">
+          Mental Health Therapist
         </p>
 
-        <form
-          className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          {/* Date */}
-          <label className="block text-sm">
-            <span className="text-slate-600">Select date</span>
-            <input
-              type="date"
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 text-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-          </label>
+        <div className="mt-4 flex gap-4">
+          <span className="text-amber-500">
+            ★ 4.8
+          </span>
 
-          {/* Time */}
-          <label className="block text-sm">
-            <span className="text-slate-600">Select time</span>
-            <select className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 text-slate-500  px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
-              <option>09:00 AM</option>
-              <option>10:30 AM</option>
-              <option>01:00 PM</option>
-              <option>03:30 PM</option>
-              <option>06:00 PM</option>
-            </select>
-          </label>
-
-          {/* Session Type */}
-          <label className="block text-sm md:col-span-2">
-            <span className="text-slate-600">Session type</span>
-            <select className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 text-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
-              <option>Video call</option>
-              <option>Audio call</option>
-              <option>Chat session</option>
-            </select>
-          </label>
-
-          {/* Notes */}
-          <label className="block text-sm md:col-span-2">
-            <span className="text-slate-600">
-              Notes (optional)
-            </span>
-            <textarea
-              rows={3}
-              placeholder="Anything you'd like the provider to know..."
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 text-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-          </label>
-
-          {/* CTA */}
-          <div className="md:col-span-2">
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 text-sm font-medium transition"
-            >
-              Book appointment
-            </button>
-          </div>
-        </form>
+          <span className="text-slate-500">
+            125 reviews
+          </span>
+        </div>
       </section>
 
-      {/* Reviews */}
-      <section>
-        <h2 className="text-lg font-semibold text-slate-900">
-          Reviews & ratings
+      {/* Availability */}
+      <section className="
+        rounded-3xl
+        bg-white
+        border
+        border-slate-200
+        p-8
+        shadow-sm
+      ">
+        <h2 className="
+          text-xl
+          font-semibold
+          text-slate-500
+          mb-6
+        ">
+          Available Slots
         </h2>
 
-        {/* Add Review */}
-        <form
-          className="mt-4 rounded-xl border border-slate-200 bg-white p-4 space-y-3 shadow-sm"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <label className="block text-sm">
-            <span className="text-slate-600">Your rating</span>
-            <select className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 text-slate-500 px-3 py-2 text-sm">
-              <option>5</option>
-              <option>4</option>
-              <option>3</option>
-              <option>2</option>
-              <option>1</option>
-            </select>
-          </label>
+        <div className="
+          grid
+          md:grid-cols-3
+          gap-4
+        ">
+          {availability.map((slot) => (
+            <button
+              key={slot._id}
+              onClick={() => {
+                setSelectedDay(
+                  slot.day
+                );
 
-          <label className="block text-sm">
-            <span className="text-slate-600">Review</span>
-            <textarea
-              rows={3}
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 text-slate-500 px-3 py-2 text-sm"
-              placeholder="Share your experience (not saved in this UI)."
+                setSelectedTime(
+                  slot.startTime
+                );
+              }}
+              className={`
+                rounded-2xl
+                border
+                p-4
+                text-left
+                transition
+                ${
+                  selectedDay ===
+                    slot.day &&
+                  selectedTime ===
+                    slot.startTime
+                    ? `
+                      bg-gradient-to-r
+                      from-cyan-500
+                      to-emerald-500
+                      text-white
+                      border-transparent
+                    `
+                    : `
+                      bg-white
+                      border-slate-200
+                      hover:border-cyan-300
+                      text-slate-500
+                    `
+                }
+              `}
+            >
+              <div className="font-semibold">
+                {slot.day}
+              </div>
+
+              <div className="text-sm mt-1">
+                {slot.startTime}
+                {" - "}
+                {slot.endTime}
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Appointment Form */}
+      <section className="
+        rounded-3xl
+        bg-white
+        border
+        border-slate-200
+        p-8
+        shadow-sm
+      ">
+        <h2 className="
+          text-xl
+          font-semibold
+          text-slate-500
+          mb-6
+        ">
+          Book Appointment
+        </h2>
+
+        <form
+          onSubmit={handleBook}
+          className="space-y-5"
+        >
+          <div>
+            <label className="
+              block
+              mb-2
+              text-sm
+              font-medium
+              text-slate-500
+            ">
+              Appointment Date
+            </label>
+
+            <input
+              type="date"
+              required
+              value={
+                appointmentDate
+              }
+              onChange={(e) =>
+                setAppointmentDate(
+                  e.target.value
+                )
+              }
+              className="
+                w-full
+                rounded-xl
+                border
+                border-slate-200
+                text-black
+                px-4
+                py-3
+              "
             />
-          </label>
+          </div>
+
+          <div>
+            <label className="
+              block
+              mb-2
+              text-sm
+              font-medium
+              text-slate-500
+            ">
+              Selected Slot
+            </label>
+
+            <div className="
+              rounded-xl
+              bg-slate-50
+              text-black
+              p-4
+            ">
+              {selectedDay}
+              {" • "}
+              {selectedTime}
+            </div>
+          </div>
+
+          <div>
+            <label className="
+              block
+              mb-2
+              text-sm
+              font-medium
+              text-slate-500
+            ">
+              Session Type
+            </label>
+
+            <select
+              value={sessionType}
+              onChange={(e) =>
+                setSessionType(
+                  e.target.value
+                )
+              }
+              className="
+                w-full
+                rounded-xl
+                border
+                border-slate-200
+                text-black
+                px-4
+                py-3
+              "
+            >
+              <option value="video">
+                Video Call
+              </option>
+
+              <option value="audio">
+                Audio Call
+              </option>
+
+              <option value="chat">
+                Chat Session
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label className="
+              block
+              mb-2
+              text-sm
+              font-medium
+              text-slate-500
+            ">
+              Notes
+            </label>
+
+            <textarea
+              rows={4}
+              value={notes}
+              onChange={(e) =>
+                setNotes(
+                  e.target.value
+                )
+              }
+              placeholder="
+                Tell the provider
+                about your concerns...
+              "
+              className="
+                w-full
+                rounded-xl
+                border
+                border-slate-200
+                text-black
+                px-4
+                py-3
+              "
+            />
+          </div>
 
           <button
             type="submit"
-            className="rounded-lg bg-teal-600 text-white px-4 py-2 text-sm font-medium hover:bg-teal-700 transition"
+            disabled={booking}
+            className="
+              w-full
+              rounded-xl
+              bg-gradient-to-r
+              from-cyan-500
+              to-emerald-500
+              text-white
+              py-4
+              font-semibold
+              hover:opacity-90
+            "
           >
-            Submit review
+            {booking
+              ? "Booking..."
+              : "Book Appointment"}
           </button>
         </form>
-
-        {/* Review List */}
-        <ul className="mt-6 space-y-4">
-          {sampleReviews.map((r) => (
-            <li
-              key={r.id}
-              className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-slate-900">
-                  {r.user}
-                </span>
-                <span className="text-amber-500 text-sm">
-                  {'★'.repeat(r.stars)}
-                </span>
-              </div>
-
-              <p className="mt-2 text-sm text-slate-600">
-                {r.text}
-              </p>
-            </li>
-          ))}
-        </ul>
       </section>
     </div>
-  )
+  );
 }

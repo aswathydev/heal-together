@@ -4,9 +4,11 @@ import heroImage from '../assets/hero-full-image.png'
 import heroBg from "../assets/hero-full-image.png";
 import Marquee from "react-fast-marquee/dist";
 import MoodPrompt from "../components/home/MoodPrompt";
-import { quotes, posts } from '../data/mockData'
+// import { quotes, posts } from '../data/mockData'
 import { useDispatch, useSelector } from 'react-redux'
 import QuoteGenerator from "../components/home/QuoteGenerator";
+import axiosInstance from "../api/axiosInstance";
+
 import {
   addMood,
   getHistory,
@@ -19,7 +21,9 @@ import {
 
 
 export default function HomePage() {
-  const daily = quotes[0]
+  const [posts, setPosts] = useState([]);
+  
+  // const daily = quotes[0]
   const { user, token } = useSelector((state) => state.auth);
   console.log(user);
 
@@ -38,6 +42,22 @@ export default function HomePage() {
   }, [])
 
 
+   // Fetch feed on mount
+   useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      // Axios automatically runs res.json() under the hood; data is directly accessible
+      const response = await axiosInstance.get('/posts');
+      console.log('posts', response);
+      setPosts(response.data);
+    } catch (err) {
+      console.error("Error fetching feed:", err.response?.data?.message || err.message);
+    }
+  };
+  
   const handleAddMood = async (
     mood,
     note
@@ -360,7 +380,7 @@ export default function HomePage() {
         }
       </section>
 
-      {token && (user?.role === 'user') && 
+      {/* {token && (user?.role === 'user') && 
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
@@ -380,7 +400,7 @@ export default function HomePage() {
         </div>
 
       </div>
-    }
+    } */}
 
       {/* 📖 About Section */}
       <section id="about" className="rounded-3xl bg-white p-8 sm:p-10 shadow-sm">
@@ -473,53 +493,267 @@ export default function HomePage() {
       {/* 🌍 Community Posts */}
       {token && (user?.role === 'user') && 
 
-        <section className="space-y-4">
+        // <section className="space-y-4">
 
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-slate-900">
-              Community posts
-            </h2>
+        //   <div className="flex items-center justify-between">
+        //     <h2 className="font-semibold text-slate-900">
+        //       Community posts
+        //     </h2>
 
-            <Link
-              to="/feed"
-              className="text-sm text-indigo-500 hover:underline"
-            >
-              View all
-            </Link>
+        //     <Link
+        //       to="/FeedPage"
+        //       className="text-sm text-indigo-500 hover:underline"
+        //     >
+        //       View all
+        //     </Link>
+        //   </div>
+
+        //   <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+
+        //     {posts.map((post, index) => (
+        //       <div
+        //         key={post.id}
+        //         className="min-w-[260px] max-w-[260px] rounded-2xl bg-white p-4 shadow-sm hover:shadow-md transition"
+        //       >
+
+        //         {/* Header */}
+        //         <div className="flex justify-between mb-2">
+        //           <span className="font-medium text-slate-800 text-sm">
+        //             {post.userId.name}
+        //           </span>
+        //           <span className="text-xs text-slate-400">
+        //             {/* {post.time} */}
+        //             {new Date(
+        //     post.createdAt
+        //   ).toLocaleDateString()}
+        //           </span>
+        //         </div>
+
+        //         {/* Mood */}
+        //         {/* <span className={`inline-block text-[10px] px-2 py-1 rounded-full mb-2 ${moodStyles[post.mood]}`}>
+        //           {post.mood}
+        //         </span> */}
+
+        //         {/* Text */}
+        //         <p className="text-xs text-slate-600 line-clamp-3">
+        //           {post.content}
+        //         </p>
+
+        //       </div>
+        //     ))}
+        //   </div>
+        // </section>
+        <section className="space-y-5">
+
+  {/* Header */}
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+        Community Feed
+      </h2>
+
+      <h3 className="font-medium text-slate-800">Community Support</h3>
+
+    </div>
+
+    <Link
+      to="/FeedPage"
+      className="
+        px-4 py-2
+        rounded-full
+        bg-gradient-to-r
+        from-blue-500
+        to-purple-600
+        text-white
+        text-sm
+        font-medium
+        shadow-md
+        hover:scale-105
+        transition
+      "
+    >
+      View All
+    </Link>
+  </div>
+
+  {/* Posts */}
+  <div className="
+    flex
+    gap-5
+    overflow-x-auto
+    pb-3
+    scrollbar-hide
+  ">
+
+    {posts.length === 0 && (
+      <div className="
+        w-full
+        rounded-3xl
+        bg-white
+        dark:bg-slate-900
+        border
+        border-slate-200
+        dark:border-slate-800
+        p-10
+        text-center
+      ">
+        <div className="text-5xl mb-3">
+          💙
+        </div>
+
+        <p className="text-slate-500">
+          No community posts yet
+        </p>
+      </div>
+    )}
+
+    {posts.map((post) => (
+      <div
+        key={post._id}
+        className="
+          min-w-[320px]
+          max-w-[320px]
+          rounded-3xl
+          bg-gradient-to-br
+          from-white
+          via-blue-50/50
+          to-purple-50/50
+          dark:from-slate-900
+          dark:via-slate-800
+          dark:to-purple-950/20
+          border
+          border-slate-200
+          dark:border-slate-800
+          shadow-sm
+          hover:shadow-xl
+          hover:-translate-y-1
+          transition-all
+          duration-300
+          p-5
+        "
+      >
+
+        {/* Top */}
+        <div className="flex justify-between items-start">
+
+          <div className="flex gap-3">
+
+            {/* Avatar */}
+            <div className="
+              h-12
+              w-12
+              rounded-full
+              bg-gradient-to-r
+              from-blue-500
+              to-purple-600
+              flex
+              items-center
+              justify-center
+              text-white
+              font-bold
+            ">
+              {post.isAnonymous
+                ? "🕵️"
+                : post.userId?.name?.charAt(0)}
+            </div>
+
+            {/* User */}
+            <div>
+              <h3 className="
+                font-semibold
+                text-slate-800
+                dark:text-white
+              ">
+                {post.isAnonymous
+                  ? "Anonymous Peer"
+                  : post.userId?.name}
+              </h3>
+
+              <p className="
+                text-xs
+                text-slate-500
+              ">
+                {new Date(
+                  post.createdAt
+                ).toLocaleDateString()}
+              </p>
+            </div>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+          {post.isAnonymous && (
+            <span className="
+              px-3 py-1
+              rounded-full
+              text-xs
+              font-medium
+              bg-purple-100
+              text-purple-700
+              dark:bg-purple-900
+              dark:text-purple-300
+            ">
+              Anonymous
+            </span>
+          )}
+        </div>
 
-            {posts.map((post) => (
-              <div
-                key={post.id}
-                className="min-w-[260px] max-w-[260px] rounded-2xl bg-white p-4 shadow-sm hover:shadow-md transition"
-              >
+        {/* Content */}
+        <div className="mt-5">
+          <p className="
+            text-sm
+            leading-7
+            text-slate-600
+            dark:text-slate-300
+            line-clamp-4
+          ">
+            {post.content}
+          </p>
+        </div>
 
-                {/* Header */}
-                <div className="flex justify-between mb-2">
-                  <span className="font-medium text-slate-800 text-sm">
-                    {post.user}
-                  </span>
-                  <span className="text-xs text-slate-400">
-                    {post.time}
-                  </span>
-                </div>
+        {/* Footer */}
+        <div className="
+          mt-6
+          pt-4
+          border-t
+          border-slate-100
+          dark:border-slate-700
+          flex
+          items-center
+          justify-between
+        ">
 
-                {/* Mood */}
-                <span className={`inline-block text-[10px] px-2 py-1 rounded-full mb-2 ${moodStyles[post.mood]}`}>
-                  {post.mood}
-                </span>
-
-                {/* Text */}
-                <p className="text-xs text-slate-600 line-clamp-3">
-                  {post.text}
-                </p>
-
-              </div>
-            ))}
+          <div className="
+            flex
+            items-center
+            gap-2
+            text-slate-500
+            text-sm
+          ">
+            ❤️
+            <span>
+              {post.likes?.length || 0}
+            </span>
           </div>
-        </section>
+
+          <button
+            className="
+              px-4 py-2
+              rounded-full
+              bg-slate-100
+              dark:bg-slate-800
+              text-sm
+              hover:bg-purple-100
+              dark:hover:bg-purple-900
+              transition
+            "
+          >
+            Report
+          </button>
+
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
       }
       {token && (user?.role === 'user') && 
         <section>

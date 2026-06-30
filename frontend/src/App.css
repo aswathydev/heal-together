@@ -182,3 +182,39 @@
     border-right-color: var(--border);
   }
 }
+
+.react-calendar {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.react-calendar__tile {
+  color: #222 !important;
+  position: relative;
+  height: 60px;
+}
+
+.react-calendar__month-view__days__day {
+  color: #222 !important;
+}
+
+.react-calendar__month-view__weekdays {
+  color: #444 !important;
+}
+
+.react-calendar__tile--active {
+  background: #3b82f6 !important;
+  color: white !important;
+}
+
+.react-calendar__navigation button {
+  color: black !important;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: red !important;
+}
