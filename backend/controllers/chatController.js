@@ -5,8 +5,6 @@ const Chat = require('../models/Chat');
 // Initialize Gemini API with your free API key
 // const ai = new GoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY});
 const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-// const ai = new GoogleGenerativeAI("AQ.Ab8RN6Lfnl3ICxI6dti27AUh9tkUzAee1hueGjtg2p3o9E0glg")
-
 
 // FIX: Pass the key directly as a string argument, not an object
 
