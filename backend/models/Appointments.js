@@ -66,6 +66,11 @@ const appointmentSchema = new mongoose.Schema(
       ],
       default: "pending",
     },
+    sessionType: {
+        type: String,
+        enum: ["Chat Session", "Video Call", "Voice Call"],
+        default: "Video Call",
+    },
 
     // Online meeting
     meetingLink: {

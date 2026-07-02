@@ -9,7 +9,7 @@ exports.createAppointment = async (
   try {
     const appointment =
       await Appointment.create({
-        userId: req.user._id,
+        userId: req.user.id,
         ...req.body,
       });
 

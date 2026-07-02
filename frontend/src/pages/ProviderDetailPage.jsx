@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getProviderAvailability } from "../services/availabilityService";
-// import { createAppointment } from "../services/appointmentService";
+import { createAppointment } from "../services/appointmentService";
 
 export default function ProviderDetailPage() {
   const { id } = useParams();
@@ -54,29 +54,29 @@ export default function ProviderDetailPage() {
   const handleBook = async (e) => {
     e.preventDefault();
 
-    // try {
-    //   setBooking(true);
+    try {
+      setBooking(true);
 
-    //   await createAppointment({
-    //     providerId: id,
-    //     appointmentDate,
-    //     day: selectedDay,
-    //     startTime: selectedTime,
-    //     sessionType,
-    //     notes,
-    //   });
+      await createAppointment({
+        providerId: id,
+        appointmentDate,
+        day: selectedDay,
+        startTime: selectedTime,
+        sessionType,
+        notes,
+      });
 
-    //   alert(
-    //     "Appointment booked successfully"
-    //   );
+      alert(
+        "Appointment booked successfully"
+      );
 
-    //   setAppointmentDate("");
-    //   setNotes("");
-    // } catch (err) {
-    //   console.log(err);
-    // } finally {
-    //   setBooking(false);
-    // }
+      setAppointmentDate("");
+      setNotes("");
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setBooking(false);
+    }
   };
 
   return (

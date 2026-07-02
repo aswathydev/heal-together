@@ -35,7 +35,7 @@ const {
 router.post(
   "/",
   protect,
-  userOnly,
+  // userOnly,
   createAppointment
 );
 

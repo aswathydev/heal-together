@@ -6,10 +6,11 @@ const connectDB = require("./config/db");
 require('dotenv').config();
 
 const app = express();
+const frontEndURL = process.env.FRONTEND_URL;
 
 // Middlewares
 app.use(cors({
-  origin: 'http://localhost:5173', // Change to your frontend domain in production
+  origin: (frontEndURL || 'http://localhost:5173'), // Change to your frontend domain in production
   credentials: true
 }));
 
