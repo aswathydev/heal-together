@@ -33,7 +33,9 @@ export default function RegisterPage() {
 
   // Redirect or show success message if authenticated
   useEffect(() => {
+    if (isAuthenticated) {
       navigate("/")
+    }
   
   }, [isAuthenticated, navigate]);
 
