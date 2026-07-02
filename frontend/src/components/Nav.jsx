@@ -77,7 +77,7 @@ export default function Nav() {
               <span className="text-green-500">Together</span>
             </h1>
 
-            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 mt-1">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 mt-1">
               Mental Wellness
             </p>
           </div>
